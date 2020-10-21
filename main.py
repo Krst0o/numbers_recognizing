@@ -1,8 +1,11 @@
-import pygame
+import pygame, sys
 
 # Define colors
+pygame.init()
+
 black = (0, 0, 0)
 darkgray = (50, 50, 50)
+gray = (140, 140, 140)
 white = (255, 255, 255)
 lightgray = (170, 170, 170)
 # Set block seizures
@@ -10,6 +13,7 @@ block_width = 50
 block_height = 50
 margin = 1
 window_size = (256, 400)
+font = pygame.font.SysFont('Times New Roman', 18)
 
 # Create buttons grid
 grid = [5*[0] for _ in range(5)]
@@ -18,21 +22,6 @@ grid = [5*[0] for _ in range(5)]
 pygame.init()
 screen = pygame.display.set_mode(window_size)
 pygame.display.set_caption("Numbers - neural network")
-
-
-# Draw grid
-def draw_grid():
-    for row in range(5):
-        for col in range(5):
-            color = white
-            if grid[row][col] == 1:
-                color = darkgray
-            pygame.draw.rect(screen, color, [(block_width) * col,
-                                             (block_height) * row,
-                                             block_width,
-                                             block_height])
-    clear_button = pygame.draw.rect(screen, lightgray, (1, 270, 50, 25))
-    inverse_button = pygame.draw.rect(screen, lightgray, (52, 270, 50, 25))
 
 def negative_values():
     for row in range(5):
@@ -45,28 +34,113 @@ def negative_values():
 
 def change_clicked_button(clicked_x, clicked_y):
     # Get row and column
-    row = int(clicked_y / 50)
-    col = int(clicked_x / 50)
+    row = int(clicked_y / 51)
+    col = int(clicked_x / 51)
     # Change color and value
-    if (row >= 0 and row <= 4) and (col >= 0  and col <= 4):
-        if grid[row][col] == 0:
-            grid[row][col] = 1
-        else:
+    if grid[row][col] == 0:
+        grid[row][col] = 1
+    else:
+        grid[row][col] = 0
+
+# Draw grid
+def draw_grid():
+    for row in range(5):
+        for col in range(5):
+            color = white
+            if grid[row][col] == 1:
+                color = darkgray
+            pygame.draw.rect(screen, color, [(block_width + 1) * col,
+                                             (block_height + 1) * row,
+                                             block_width,
+                                             block_height])
+    ### FIRST ROW
+    # Create clear button with text
+    clear_button_text = font.render("clear", False, (0, 0, 0))
+    clear_button = pygame.draw.rect(screen, lightgray, (0, 270, 64, 32))
+    screen.blit(clear_button_text, clear_button)
+    # Create up button with text
+    up_button_text = font.render("up", False, (0, 0, 0))
+    up_button = pygame.draw.rect(screen, gray, (65, 270, 64, 32))
+    screen.blit(up_button_text, up_button)
+    # Create inverse button with text
+    inverse_button_text = font.render("inverse", False, (0, 0, 0))
+    inverse_button = pygame.draw.rect(screen, lightgray, (130, 270, 64, 32))
+    screen.blit(inverse_button_text, inverse_button)
+    ### SECOND ROW
+    # Create left button with text
+    left_button_text = font.render("left", False, (0, 0, 0))
+    left_button = pygame.draw.rect(screen, gray, (0, 303, 64, 32))
+    screen.blit(left_button_text, left_button)
+    # Create down button with text
+    down_button_text = font.render("down", False, (0, 0, 0))
+    down_button = pygame.draw.rect(screen, gray, (65, 303, 64, 32))
+    screen.blit(down_button_text, down_button)
+    # Create right button with text
+    right_button_text = font.render("right", False, (0, 0, 0))
+    right_button = pygame.draw.rect(screen, gray, (130, 303, 64, 32))
+    screen.blit(right_button_text, right_button)
+def clear_grid_button():
+    for row in range(5):
+        for col in range(5):
             grid[row][col] = 0
 
+def inverse_grid_button():
+    for row in range(5):
+        for col in range(5):
+            if grid[row][col] == 0:
+                grid[row][col] = 1
+            else:
+                grid[row][col] = 0
+def up_grid_button():
+    print("Up button")
+
+def down_grid_button():
+    print("down button")
+
+def left_grid_button():
+    print("left button")
+
+def right_grid_button():
+    print("right button")
+
+
 # Main loop
-while True:
-    # Update grid
-    pygame.display.update()
-    draw_grid()
-    # Listen for events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                clicked_x = pygame.mouse.get_pos()[0]
-                clicked_y = pygame.mouse.get_pos()[1]
-                change_clicked_button(clicked_x, clicked_y)
-        else:
-            continue
+def main():
+    while True:
+        # Update grid
+        pygame.display.update()
+        draw_grid()
+        # Listen for events
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    clicked_x = pygame.mouse.get_pos()[0]
+                    clicked_y = pygame.mouse.get_pos()[1]
+                    # Clicked grid
+                    if (clicked_x > 0 and clicked_x < 256) and  (clicked_y > 0 and clicked_y < 256):
+                        change_clicked_button(clicked_x, clicked_y)
+                    # Clicked clear button
+                    if (clicked_x >= 0 and clicked_x <= 64) and (clicked_y >= 270 and clicked_y <= 302):
+                        clear_grid_button()
+                    # Clicked up button
+                    if (clicked_x >= 65 and clicked_x <= 129) and (clicked_y >= 270 and clicked_y < 302):
+                        up_grid_button()
+                    # Clicked inverse button
+                    if (clicked_x >= 130 and clicked_x <= 194) and (clicked_y >= 270 and clicked_y < 302):
+                        inverse_grid_button()
+                    # Clicked left button
+                    if (clicked_x >= 0 and clicked_x <= 64) and (clicked_y >= 303 and clicked_y <= 335):
+                        left_grid_button()
+                    # Clicked down button
+                    if (clicked_x >= 65 and clicked_x <= 129) and (clicked_y >= 303 and clicked_y <= 335):
+                        down_grid_button()
+                    # Clicked right button
+                    if (clicked_x >= 130 and clicked_x <= 194) and (clicked_y >= 303 and clicked_y <= 335):
+                        right_grid_button()
+            else:
+                continue
+
+main()
