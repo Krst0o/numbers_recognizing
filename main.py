@@ -79,7 +79,7 @@ perceptrons = []
 
 # PERCEPTRON CLASS
 class Perceptron(object):
-    def __init__(self, no_of_inputs, learning_rate=0.01, iterations=1000):
+    def __init__(self, no_of_inputs, learning_rate=0.01, iterations=10000):
         self.iterations = iterations
         self.learning_rate = learning_rate
         self.no_of_inputs = no_of_inputs
@@ -92,13 +92,12 @@ class Perceptron(object):
         for _ in range(self.iterations):
             # ZADANIE DOMOWE - losowosc
             random_input = random.choice(list(zip(training_data, labels)))
+            
             # input = noisy(input) # ZADANIE DOMOWE - zaburzenie wejscia
-            """
-            Zamienic inputy na numpy array i na nich wykonywać operacje 
-      
-            random_input[0] += np.random.binomial(1, 0.1, size=(25))
-            random_input[0] = np.where(random_input[0] > 0, 1, 0)
-            """
+            # Zamienic inputy na numpy array i na nich wykonywać operacje
+            #random_input[0] += np.random.binomial(1, 0.1, size=(25))
+            #random_input[0] = np.where(random_input[0] > 0, 1, 0)
+            
             prediction = self.output(random_input[0])
             if (random_input[1] - prediction) == 0:
                 lifetime += 1
@@ -137,7 +136,7 @@ window_size = (256, 400)
 font = pygame.font.SysFont('comicsansms', 22)
 
 # Create buttons grid
-grid = [5*[0] for _ in range(5)]
+grid = 25*[0]
 
 # Initialization pygame
 pygame.init()
@@ -145,35 +144,32 @@ screen = pygame.display.set_mode(window_size)
 pygame.display.set_caption("Numbers - neural network")
 
 def negative_values():
-    for row in range(5):
-        for col in range(5):
-            if grid[row][col] == 1:
-                grid[row][col] = 0
-            else:
-                grid[row][col] = 1
+    for i in range(25):
+        if grid[i] == 1:
+            grid[i] = 0
+        else:
+            grid[i] = 1
 
 
 def change_clicked_button(clicked_x, clicked_y):
     # Get row and column
     row = int(clicked_y / 51)
     col = int(clicked_x / 51)
+    i = 5 * row + col
     # Change color and value
-    if grid[row][col] == 0:
-        grid[row][col] = 1
+    if grid[i] == 0:
+        grid[i] = 1
     else:
-        grid[row][col] = 0
+        grid[i] = 0
 
 # Draw grid
 def draw_grid():
-    for row in range(5):
-        for col in range(5):
-            color = white
-            if grid[row][col] == 1:
-                color = darkgray
-            pygame.draw.rect(screen, color, [(block_width + 1) * col,
-                                             (block_height + 1) * row,
-                                             block_width,
-                                             block_height])
+    for i in range(25):
+        color = white
+        if grid[i] == 1:
+            color = darkgray
+        pygame.draw.rect(screen, color, [(block_width + 1) * int(i%5), (block_height + 1) * int(i/5),
+                                        block_width, block_height])
     ### FIRST ROW
     # Create clear button with text
     clear_button_text = font.render("CLEAR", False, (0, 0, 0))
@@ -210,17 +206,15 @@ def draw_grid():
     learn_button = pygame.draw.rect(screen, gray, (65, 336, 64, 32))
     screen.blit(learn_button_text, learn_button)
 def clear_grid_button():
-    for row in range(5):
-        for col in range(5):
-            grid[row][col] = 0
+    for i in range(25):
+        grid[i] = 0
 
 def inverse_grid_button():
-    for row in range(5):
-        for col in range(5):
-            if grid[row][col] == 0:
-                grid[row][col] = 1
-            else:
-                grid[row][col] = 0
+    for i in range(25):
+        if grid[i] == 0:
+            grid[i] = 1
+        else:
+            grid[i] = 0
 def up_grid_button():
     print("Up button")
 
@@ -242,7 +236,7 @@ def learn_grid_button():
 
 def check_grid_button():
     for i in range(10):
-        print(perceptrons[i].output(grid))
+        print("{} {}".format(i, perceptrons[i].output(grid)))
 
 
 # Main loop
