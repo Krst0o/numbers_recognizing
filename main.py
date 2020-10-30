@@ -1,80 +1,10 @@
 import pygame
 import numpy as np
 import random
+import data
 
 # TRAINING DATA
-number = [[] for _ in range(10)]
-number[0] = [
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0]
-  ]
-number[1] = [
-    [0.0, 0.0, 0.0, 1.0, 0.0],
-    [0.0, 0.0, 1.0, 1.0, 0.0],
-    [0.0, 1.0, 0.0, 1.0, 0.0],
-    [1.0, 0.0, 0.0, 1.0, 0.0],
-    [0.0, 0.0, 0.0, 1.0, 0.0]
-  ]
-number[2] = [
-    [0.0, 1.0, 1.0, 1.0, 0.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [0.0, 0.0, 0.0, 1.0, 0.0],
-    [0.0, 0.0, 1.0, 0.0, 0.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0]
-  ]
-number[3] = [
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [0.0, 0.0, 0.0, 0.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0, 1.0],
-    [0.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0]
-  ]
-number[4] = [
-    [1.0, 0.0, 0.0, 0.0, 0.0],
-    [1.0, 0.0, 0.0, 1.0, 0.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [0.0, 0.0, 0.0, 1.0, 0.0],
-    [0.0, 0.0, 0.0, 1.0, 0.0]
-  ]
-number[5] = [
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 0.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [0.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0]
-  ]
-number[6] = [
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 0.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0]
-  ]
-number[7] = [
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [0.0, 0.0, 0.0, 1.0, 0.0],
-    [0.0, 0.0, 1.0, 0.0, 0.0],
-    [0.0, 1.0, 0.0, 0.0, 0.0],
-    [1.0, 0.0, 0.0, 0.0, 0.0]
-  ]
-number[8] = [
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0]
-  ]
-number[9] = [
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0],
-    [0.0, 0.0, 0.0, 0.0, 1.0],
-    [1.0, 1.0, 1.0, 1.0, 1.0]
-  ]
-training_inputs = [ np.ravel(n) for n in number ]
+training_inputs = [ np.ravel(n) for n in data.number ]
 perceptrons = []
 
 # PERCEPTRON CLASS
@@ -84,33 +14,34 @@ class Perceptron(object):
         self.learning_rate = learning_rate
         self.no_of_inputs = no_of_inputs
         self.weights = np.random.rand(self.no_of_inputs + 1) - 0.5
-        self.best_weights = self.weights
-    
+        self.best_weights = np.copy(self.weights)
+
     def train(self, training_data, labels):
-        lifetime = 0
+        self.lifetime = 0
         record = 0
         for _ in range(self.iterations):
             # ZADANIE DOMOWE - losowosc
             random_input = random.choice(list(zip(training_data, labels)))
-            
-            # input = noisy(input) # ZADANIE DOMOWE - zaburzenie wejscia
-            # Zamienic inputy na numpy array i na nich wykonywać operacje
-            #random_input[0] += np.random.binomial(1, 0.1, size=(25))
-            #random_input[0] = np.where(random_input[0] > 0, 1, 0)
-            
-            prediction = self.output(random_input[0])
-            if (random_input[1] - prediction) == 0:
-                lifetime += 1
-                if (lifetime > record):
-                    self.best_weights = self.weights
+            random_trainig_data = np.copy(random_input[0])
+            random_training_label = np.copy(random_input[1])
+
+            # ZADANIE DOMOWE - zaburzenie wejscia
+            noise = np.random.binomial(1, 0.01, size=(25))
+            random_trainig_data += noise
+            random_trainig_data = np.where(random_trainig_data > 0, 1, 0)
+
+            prediction = self.output(random_trainig_data)
+            if (random_training_label - prediction) == 0:
+                self.lifetime += 1
+                if (self.lifetime > record):
+                    self.best_weights = np.copy(self.weights)
             else:
-                self.weights[1:] += self.learning_rate * (random_input[1] - prediction) * random_input[0]
-                self.weights[0] += self.learning_rate * (random_input[1] - prediction)
-                lifetime = 0
-    
-            # ZADANIE DOMOWE 3 - warunek stopu
-            # ZADANIE DOMOWE 4 - PLA + RPLA
-            # h(x) = (ax + b) % m
+                self.weights[1:] += self.learning_rate * (random_training_label - prediction) * random_trainig_data
+                self.weights[0] += self.learning_rate * (random_training_label - prediction)
+                self.lifetime = 0
+
+                # ZADANIE DOMOWE 3 - warunek stopu
+                # ZADANIE DOMOWE 4 - PLA + RPLA
     
     def output(self, input):
         summation = np.dot(self.best_weights[1:], input) + self.best_weights[0]
@@ -133,10 +64,10 @@ block_width = 50
 block_height = 50
 margin = 1
 window_size = (256, 400)
-font = pygame.font.SysFont('comicsansms', 22)
+font = pygame.font.SysFont('comicsansms', 20)
 
 # Create buttons grid
-grid = 25*[0]
+grid = np.array(25*[0])
 
 # Initialization pygame
 pygame.init()
@@ -144,6 +75,7 @@ screen = pygame.display.set_mode(window_size)
 pygame.display.set_caption("Numbers - neural network")
 
 def negative_values():
+    global grid
     for i in range(25):
         if grid[i] == 1:
             grid[i] = 0
@@ -152,6 +84,7 @@ def negative_values():
 
 
 def change_clicked_button(clicked_x, clicked_y):
+    global grid
     # Get row and column
     row = int(clicked_y / 51)
     col = int(clicked_x / 51)
@@ -164,6 +97,7 @@ def change_clicked_button(clicked_x, clicked_y):
 
 # Draw grid
 def draw_grid():
+    global grid
     for i in range(25):
         color = white
         if grid[i] == 1:
@@ -183,6 +117,10 @@ def draw_grid():
     inverse_button_text = font.render("INVERSE", False, (0, 0, 0))
     inverse_button = pygame.draw.rect(screen, lightgray, (130, 270, 64, 32))
     screen.blit(inverse_button_text, inverse_button)
+    # Create blur button with text
+    blur_button_text = font.render("BLUR", False, (0, 0, 0))
+    blur_button = pygame.draw.rect(screen, lightgray, (195, 270, 64, 32))
+    screen.blit(blur_button_text, blur_button)
     ### SECOND ROW
     # Create left button with text
     left_button_text = font.render("LEFT", False, (0, 0, 0))
@@ -196,47 +134,71 @@ def draw_grid():
     right_button_text = font.render("RIGHT", False, (0, 0, 0))
     right_button = pygame.draw.rect(screen, gray, (130, 303, 64, 32))
     screen.blit(right_button_text, right_button)
+    # Create exit button with text
+    exit_button_text = font.render("EXIT", False, (0, 0, 0))
+    exit_button = pygame.draw.rect(screen, lightgray, (195, 303, 64, 32))
+    screen.blit(exit_button_text, exit_button)
     ### THIRD ROW
     # Create learn button
     learn_button_text = font.render("LEARN", False, (0, 0, 0))
-    learn_button = pygame.draw.rect(screen, gray, (0, 336, 64, 32))
+    learn_button = pygame.draw.rect(screen, lightgray, (0, 336, 64, 32))
     screen.blit(learn_button_text, learn_button)
     # Create check button
     learn_button_text = font.render("CHECK", False, (0, 0, 0))
-    learn_button = pygame.draw.rect(screen, gray, (65, 336, 64, 32))
+    learn_button = pygame.draw.rect(screen, lightgray, (65, 336, 64, 32))
     screen.blit(learn_button_text, learn_button)
 def clear_grid_button():
+    global grid
     for i in range(25):
         grid[i] = 0
 
 def inverse_grid_button():
+    global grid
     for i in range(25):
         if grid[i] == 0:
             grid[i] = 1
         else:
             grid[i] = 0
+
+def blur_grid_button():
+    global grid
+    noise = np.random.binomial(1, 0.1, size=(5,5))
+    grid += noise.reshape((-1))
+    grid = np.where(grid > 0, 1, 0)
+
 def up_grid_button():
-    print("Up button")
+    global grid
+    grid = grid.reshape((5, 5))
+    grid = np.roll(grid, -1, axis=0)
+    grid = grid.reshape((-1))
 
 def down_grid_button():
-    print("down button")
+    global grid
+    grid = grid.reshape((5,5))
+    grid = np.roll(grid, 1, axis=0)
+    grid = grid.reshape((-1))
 
 def left_grid_button():
-    print("left button")
+    global grid
+    grid = grid.reshape((5, 5))
+    grid = np.roll(grid, -1, axis=1)
+    grid = grid.reshape((-1))
 
 def right_grid_button():
-    print("right button")
+    global grid
+    grid = grid.reshape((5, 5))
+    grid = np.roll(grid, 1, axis=1)
+    grid = grid.reshape((-1))
 
 def learn_grid_button():
     for i in range(10):
         labels = np.zeros(10)
         labels[i] = 1
         perceptrons[i].train(training_inputs, labels)
-        print(perceptrons[i].best_weights)
 
 def check_grid_button():
     for i in range(10):
-        print("{} {}".format(i, perceptrons[i].output(grid)))
+        print("Perceptron {}: {}".format(i, perceptrons[i].output(grid)))
 
 
 # Main loop
@@ -268,6 +230,9 @@ def main():
                     # Clicked inverse button
                     if (clicked_x >= 130 and clicked_x <= 194) and (clicked_y >= 270 and clicked_y < 302):
                         inverse_grid_button()
+                    # Clicked blur button
+                    if (clicked_x >= 195 and clicked_x <= 259) and (clicked_y >= 270 and clicked_y < 302):
+                        blur_grid_button()
                     # Clicked left button
                     if (clicked_x >= 0 and clicked_x <= 64) and (clicked_y >= 303 and clicked_y <= 335):
                         left_grid_button()
@@ -277,8 +242,13 @@ def main():
                     # Clicked right button
                     if (clicked_x >= 130 and clicked_x <= 194) and (clicked_y >= 303 and clicked_y <= 335):
                         right_grid_button()
+                    # Clicked exit button
+                    if (clicked_x >= 195 and clicked_x <= 259) and (clicked_y >= 303 and clicked_y <= 335):
+                        pygame.quit()
+                    # Clicked learn button
                     if (clicked_x >= 0 and clicked_x <= 64) and (clicked_y >= 336 and clicked_y <= 368):
                         learn_grid_button()
+                    # Clicked check button
                     if(clicked_x >= 65 and clicked_x <= 129) and (clicked_y >= 336 and clicked_y <= 368):
                         check_grid_button()
             else:
