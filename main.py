@@ -1,11 +1,19 @@
 import pygame
 import numpy as np
 import random
-# import data
+# import training inputs and variables
 import data
+from variables import *
 
-# TRAINING DATA
+# GUI INIT
+pygame.init()
+font = pygame.font.SysFont('comicsansms', 20)
+label_font = pygame.font.SysFont('comicsansms', 28)
+screen = pygame.display.set_mode(window_size)
+pygame.display.set_caption("Numbers - neural network")
 perceptrons = []
+which_perceptron = ""
+grid = np.array(25*[0])
 
 # PERCEPTRON CLASS
 class Perceptron(object):
@@ -55,32 +63,6 @@ class Perceptron(object):
         else:
             activation = 0
         return activation
-
-# GUI
-# Define colors
-pygame.init()
-black = (0, 0, 0)
-darkgray = (50, 50, 50)
-gray = (140, 140, 140)
-white = (255, 255, 255)
-lightgray = (170, 170, 170)
-# Set block seizures
-block_width = 50
-block_height = 50
-margin = 1
-window_size = (256, 400)
-font = pygame.font.SysFont('comicsansms', 20)
-label_font = pygame.font.SysFont('comicsansms', 28)
-which_perceptron = ""
-
-# Create buttons grid
-grid = np.array(25*[0])
-
-# Initialization pygame
-pygame.init()
-screen = pygame.display.set_mode(window_size)
-pygame.display.set_caption("Numbers - neural network")
-
 
 # Change button color and gird value after click on proper button
 def change_clicked_button(clicked_x, clicked_y):
@@ -213,7 +195,7 @@ def learn_grid_button():
     labels = [np.ravel(n) for n in np.array(training_inputs)[:, 0]]
     for i in range(10):
         perceptrons[i].train(training_data, labels)
-    print("Koniec uczenia")
+    print("Learned")
 
 
 # Check number classification for selected values in grid
