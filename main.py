@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 import random
 # import training inputs and variables
-import data
+from data import *
 from variables import *
 
 # GUI INIT
@@ -140,7 +140,6 @@ def draw_grid():
 # Set grid values to 0
 def clear_grid_button():
     global grid
-    global which_perceptron
     for i in range(25):
         grid[i] = 0
 
@@ -190,7 +189,7 @@ def right_grid_button():
 
 # Read data from file and train perceptrons
 def learn_grid_button():
-    training_inputs = [ np.ravel(n) for n in data.number ]
+    training_inputs = [ np.ravel(n) for n in number ]
     training_data = [np.ravel(n) for n in np.array(training_inputs)[:, 1]]
     labels = [np.ravel(n) for n in np.array(training_inputs)[:, 0]]
     for i in range(10):
@@ -213,12 +212,33 @@ def main():
         perceptrons.append(Perceptron(5 * 5, i))
     while True:
         # Update grid
-        pygame.display.update()
         draw_grid()
+        global grid
 
         # Listen for events
         events = pygame.event.get()
         for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_0:
+                    grid = number[0][1]
+                if event.key == pygame.K_1:
+                    grid = number[1][1]
+                if event.key == pygame.K_2:
+                    grid = number[2][1]
+                if event.key == pygame.K_3:
+                    grid = number[3][1]
+                if event.key == pygame.K_4:
+                    grid = number[4][1]
+                if event.key == pygame.K_5:
+                    grid = number[5][1]
+                if event.key == pygame.K_6:
+                    grid = number[6][1]
+                if event.key == pygame.K_7:
+                    grid = number[7][1]
+                if event.key == pygame.K_8:
+                    grid = number[8][1]
+                if event.key == pygame.K_9:
+                    grid = number[9][1]
             if event.type == pygame.QUIT:
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -260,4 +280,5 @@ def main():
                         check_grid_button()
             else:
                 continue
+        pygame.display.update()
 main()
